@@ -77,6 +77,7 @@ export interface EventData {
   themeConfig: ThemeConfig;
   organizerName?: string;
   logoUrl?: string;
+  schoolLogos?: string[]; // Up to 4 optional school / foundation logo URLs or base64 strings
   updatedAt?: string;
 }
 

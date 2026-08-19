@@ -40,7 +40,12 @@ export const InvitationView: React.FC<InvitationViewProps> = ({
     }, 150);
   };
 
-  const scrollToCalendarOrShare = () => {
+  const scrollToCalendar = () => {
+    const calendar = document.getElementById('calendar') || document.getElementById('acara');
+    calendar?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToRsvp = () => {
     const rsvp = document.getElementById('rsvp') || document.getElementById('acara');
     rsvp?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -106,14 +111,14 @@ export const InvitationView: React.FC<InvitationViewProps> = ({
         {/* 1. HERO */}
         <HeroSection
           event={event}
-          onOpenCalendar={scrollToCalendarOrShare}
-          onOpenShare={scrollToCalendarOrShare}
+          onOpenCalendar={scrollToCalendar}
+          onOpenRsvp={scrollToRsvp}
         />
 
         {/* 2. COUNTDOWN */}
         <CountdownSection
           event={event}
-          onOpenCalendar={scrollToCalendarOrShare}
+          onOpenCalendar={scrollToCalendar}
         />
 
         {/* 3. INFORMASI ACARA */}

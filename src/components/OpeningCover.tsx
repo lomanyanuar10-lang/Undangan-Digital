@@ -52,12 +52,35 @@ export const OpeningCover: React.FC<OpeningCoverProps> = ({ event, isOpen, onOpe
 
       {/* Center Card */}
       <div className="relative w-full max-w-md mx-auto my-auto rounded-3xl border border-amber-400/30 bg-emerald-950/85 p-6 sm:p-8 text-center backdrop-blur-xl shadow-2xl shadow-black/60 flex flex-col items-center">
-        {/* Top Mosque Emblem */}
-        <div className="relative mb-3 flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-emerald-900/80 border border-amber-400/50 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.3)] animate-pulse-slow">
-            <CrescentStarIcon className="w-9 h-9 text-amber-400" />
-          </div>
-        </div>
+        {/* Top School Logos or Default Mosque Emblem */}
+        {(() => {
+          const activeLogos = (event.schoolLogos || []).filter((l) => l && l.trim());
+          if (activeLogos.length > 0) {
+            return (
+              <div className="relative mb-4 flex items-center justify-center gap-2 sm:gap-3 flex-wrap max-w-xs sm:max-w-sm px-3.5 py-2 rounded-2xl bg-emerald-900/70 border border-amber-400/35 backdrop-blur-md shadow-lg shadow-black/40">
+                {activeLogos.map((logoUrl, idx) => (
+                  <div
+                    key={idx}
+                    className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-amber-400/40 overflow-hidden"
+                  >
+                    <img
+                      src={logoUrl}
+                      alt={`Logo Sekolah ${idx + 1}`}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            );
+          }
+          return (
+            <div className="relative mb-3 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-900/80 border border-amber-400/50 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.3)] animate-pulse-slow">
+                <CrescentStarIcon className="w-9 h-9 text-amber-400" />
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Bismillah */}
         <BismillahCalligraphy className="mb-3" />

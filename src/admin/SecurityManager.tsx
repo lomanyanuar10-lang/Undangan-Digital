@@ -8,13 +8,20 @@ import {
   Copy,
   Check,
   AlertTriangle,
-  Sparkles,
   Link2,
+  Share2,
+  MessageCircle,
+  Sparkles,
 } from 'lucide-react';
 import { authService } from '../services/authService';
 import { storageService } from '../services/storageService';
 
 export const SecurityManager: React.FC = () => {
+  const event = storageService.getEvent('maulid-1448');
+  const [guestName, setGuestName] = useState('');
+  const [copiedLink, setCopiedLink] = useState('');
+  const [copiedText, setCopiedText] = useState(false);
+
   const [currentMasterPass, setCurrentMasterPass] = useState(storageService.getMasterPassword());
   const [newMasterPass, setNewMasterPass] = useState('');
   const [masterPassSaved, setMasterPassSaved] = useState(false);
@@ -26,10 +33,68 @@ export const SecurityManager: React.FC = () => {
   const [adminCreateSuccess, setAdminCreateSuccess] = useState('');
   const [adminCreateError, setAdminCreateError] = useState('');
 
-  const [copiedLink, setCopiedLink] = useState('');
-
   const adminSecretUrl = `${window.location.origin}/#admin`;
-  const guestPublicUrl = window.location.origin;
+  const guestPublicBaseUrl = window.location.origin;
+
+  const getGuestInvitationUrl = (guest?: string) => {
+    try {
+      const baseUrl = window.location.origin + window.location.pathname;
+      if (guest && guest.trim()) {
+        return `${baseUrl}?to=${encodeURIComponent(guest.trim())}`;
+      }
+      return baseUrl;
+    } catch {
+      return window.location.href;
+    }
+  };
+
+  const getWhatsAppMessage = (guest?: string) => {
+    const link = getGuestInvitationUrl(guest);
+    const kepadaYth = guest && guest.trim() ? `Kepada Yth: *${guest.trim()}*\n\n` : '';
+
+    return `Assalamu'alaikum Warahmatullahi Wabarakatuh.
+
+${kepadaYth}Kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam:
+
+*${event.title}*
+
+Tema:
+_"${event.theme}"_
+
+📅 *${event.dateStr}*
+⏰ *Pukul ${event.timeStr}*
+📍 *${event.venueName}*
+(${event.venueAddress})
+
+Pembicara: *${event.speakerName} ${event.speakerTitle}*
+
+Untuk informasi susunan acara, lokasi maps, dan konfirmasi kehadiran (RSVP), silakan buka tautan undangan digital kami:
+${link}
+
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk mempererat tali silaturahim serta meneladani akhlak Rasulullah SAW.
+
+Wassalamu'alaikum Warahmatullahi Wabarakatuh.`;
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = getWhatsAppMessage(guestName);
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCopyGuestLink = () => {
+    const url = getGuestInvitationUrl(guestName);
+    navigator.clipboard?.writeText(url);
+    setCopiedLink('guest-custom');
+    setTimeout(() => setCopiedLink(''), 2500);
+  };
+
+  const handleCopyFullWaText = () => {
+    const text = getWhatsAppMessage(guestName);
+    navigator.clipboard?.writeText(text);
+    setCopiedText(true);
+    setTimeout(() => setCopiedText(false), 2500);
+  };
 
   const handleUpdateMasterPassword = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,10 +141,112 @@ export const SecurityManager: React.FC = () => {
         <div>
           <h2 className="font-title text-xl sm:text-2xl font-bold text-amber-100 flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-amber-400" />
-            <span>Keamanan &amp; Akun Admin</span>
+            <span>Keamanan, Akun &amp; Bagikan Undangan</span>
           </h2>
           <p className="text-xs text-emerald-200/80 mt-1">
-            Kelola hak akses pengelola dan tautan rahasia panel kontrol
+            Alat pembuat undangan khusus tamu, tautan rahasia admin, dan manajemen hak akses
+          </p>
+        </div>
+      </div>
+
+      {/* Card 0: Generator Bagikan Undangan ke Tamu (Moved from Guest view to Admin only) */}
+      <div className="rounded-3xl border border-amber-400/35 bg-emerald-950/90 p-6 sm:p-7 backdrop-blur-md shadow-2xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-amber-400/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400">
+              <Share2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-title text-base sm:text-lg font-bold text-amber-100">
+                Generator Undangan Khusus Tamu (WhatsApp)
+              </h3>
+              <p className="text-xs text-emerald-200/80">
+                Khusus Panitia: Buat link personal dengan nama tamu dan kirim langsung via WhatsApp
+              </p>
+            </div>
+          </div>
+          <span className="text-[11px] px-3 py-1 rounded-full bg-emerald-900 border border-amber-400/30 text-amber-300 font-semibold self-start sm:self-auto">
+            Hanya di Panel Admin
+          </span>
+        </div>
+
+        {/* Input Nama Tamu */}
+        <div className="space-y-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-amber-200 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Ketik Nama Tamu (Opsional):</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Contoh: Bapak H. Ridwan / Ibu Fatimah / Keluarga Besar Alumni"
+            value={guestName}
+            onChange={(e) => setGuestName(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-emerald-900/60 border border-amber-400/30 text-emerald-50 placeholder-emerald-400/40 text-sm focus:outline-none focus:border-amber-400 shadow-inner"
+          />
+          <p className="text-[11px] text-emerald-300/70 italic">
+            {guestName.trim()
+              ? `Tautan akan otomatis disesuaikan menyapa: "${guestName.trim()}" di halaman pembuka.`
+              : 'Jika dikosongkan, tautan akan membuka undangan umum tanpa nama khusus.'}
+          </p>
+        </div>
+
+        {/* Buttons Action */}
+        <div className="space-y-3 pt-1">
+          <button
+            id="btn-admin-share-whatsapp"
+            onClick={handleShareWhatsApp}
+            className="w-full py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 transition-all active:scale-95 cursor-pointer"
+          >
+            <MessageCircle className="w-5 h-5 fill-current" />
+            <span>BAGIKAN LANGSUNG KE WHATSAPP</span>
+          </button>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              id="btn-admin-copy-link"
+              onClick={handleCopyGuestLink}
+              className="py-2.5 px-4 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-amber-400/30 text-amber-200 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-md"
+            >
+              {copiedLink === 'guest-custom' ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span className="text-emerald-300">Tautan Tamu Disalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 text-amber-400" />
+                  <span>Salin Tautan Khusus Tamu</span>
+                </>
+              )}
+            </button>
+
+            <button
+              id="btn-admin-copy-wa-text"
+              onClick={handleCopyFullWaText}
+              className="py-2.5 px-4 rounded-xl bg-emerald-900 hover:bg-emerald-800 border border-amber-400/30 text-amber-200 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-md"
+            >
+              {copiedText ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span className="text-emerald-300">Format WA Disalin!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4 text-amber-400" />
+                  <span>Salin Format Pesan WA</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Live Preview Tautan */}
+        <div className="p-3.5 rounded-xl bg-emerald-900/40 border border-amber-400/20 text-xs space-y-1">
+          <span className="text-[11px] font-semibold text-amber-300 uppercase tracking-wider">
+            Tautan Tamu yang Dihasilkan:
+          </span>
+          <p className="font-mono text-emerald-100 break-all bg-emerald-950/80 p-2.5 rounded-lg border border-emerald-700/40 text-[11px]">
+            {getGuestInvitationUrl(guestName)}
           </p>
         </div>
       </div>
@@ -90,7 +257,7 @@ export const SecurityManager: React.FC = () => {
         <div className="space-y-1">
           <h4 className="font-bold text-amber-100">Perbedaan Halaman Tamu &amp; Halaman Admin</h4>
           <p className="text-emerald-200/80 leading-relaxed">
-            Halaman publik undangan yang dibagikan ke tamu <strong>TIDAK memiliki tombol admin</strong> sama sekali. Panel Pengelola ini hanya dapat dibuka melalui tautan rahasia admin di bawah.
+            Halaman publik undangan yang dibagikan ke tamu <strong>TIDAK memiliki form bagikan nama</strong> maupun tombol admin sama sekali. Panel Pengelola ini hanya dapat dibuka melalui tautan rahasia admin di bawah.
           </p>
         </div>
       </div>
@@ -116,12 +283,12 @@ export const SecurityManager: React.FC = () => {
               <input
                 type="text"
                 readOnly
-                value={guestPublicUrl}
+                value={guestPublicBaseUrl}
                 className="w-full px-3 py-1.5 rounded-lg bg-emerald-950/90 border border-emerald-600/40 text-emerald-100 text-xs font-mono"
               />
               <button
                 type="button"
-                onClick={() => copyToClipboard(guestPublicUrl, 'guest')}
+                onClick={() => copyToClipboard(guestPublicBaseUrl, 'guest')}
                 className="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-emerald-100 text-xs font-semibold flex items-center gap-1 shrink-0 cursor-pointer"
               >
                 {copiedLink === 'guest' ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}

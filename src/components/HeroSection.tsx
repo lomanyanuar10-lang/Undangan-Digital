@@ -6,10 +6,10 @@ import { BismillahCalligraphy, CrescentStarIcon, GoldIslamicDivider, LanternSilh
 interface HeroSectionProps {
   event: EventData;
   onOpenCalendar: () => void;
-  onOpenShare: () => void;
+  onOpenRsvp?: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ event, onOpenCalendar, onOpenShare }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ event, onOpenCalendar, onOpenRsvp }) => {
   return (
     <section
       id="hero"
@@ -29,6 +29,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ event, onOpenCalendar,
 
       {/* Main Content Container */}
       <div className="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center">
+        {/* Optional School Logos at Top */}
+        {(() => {
+          const activeLogos = (event.schoolLogos || []).filter((l) => l && l.trim());
+          if (activeLogos.length > 0) {
+            return (
+              <div className="mb-4 flex items-center justify-center gap-2 sm:gap-3 flex-wrap max-w-xs sm:max-w-md px-3.5 py-2 rounded-2xl bg-emerald-900/70 border border-amber-400/35 backdrop-blur-md shadow-xl">
+                {activeLogos.map((logoUrl, idx) => (
+                  <div
+                    key={idx}
+                    className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-amber-400/40 overflow-hidden"
+                  >
+                    <img
+                      src={logoUrl}
+                      alt={`Logo Sekolah ${idx + 1}`}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         {/* Top Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-800/60 border border-amber-400/40 text-amber-300 text-xs font-semibold mb-4 shadow-lg backdrop-blur-md">
           <CrescentStarIcon className="w-4 h-4 text-amber-400" />
@@ -78,12 +102,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ event, onOpenCalendar,
             <span>Simpan Jadwal</span>
           </button>
           <button
-            id="btn-hero-share"
-            onClick={onOpenShare}
-            className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
+            id="btn-hero-rsvp"
+            onClick={onOpenRsvp || onOpenCalendar}
+            className="flex-1 min-w-[140px] px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-emerald-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
           >
-            <Share2 className="w-4 h-4" />
-            <span>Bagikan</span>
+            <Sparkles className="w-4 h-4 text-emerald-950" />
+            <span>RSVP Kehadiran</span>
           </button>
         </div>
       </div>

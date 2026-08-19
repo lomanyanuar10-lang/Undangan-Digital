@@ -142,6 +142,7 @@ export const EventForm: React.FC<EventFormProps> = ({ event, onSave }) => {
           {[0, 1, 2, 3].map((idx) => {
             const logoVal = currentLogosList[idx] || '';
             const hasLogo = Boolean(logoVal && logoVal.trim());
+            const isBase64 = logoVal.startsWith('data:');
 
             return (
               <div
@@ -184,9 +185,9 @@ export const EventForm: React.FC<EventFormProps> = ({ event, onSave }) => {
 
                 <div className="space-y-2">
                   {/* File Upload Button */}
-                  <label className="w-full py-1.5 px-2.5 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-amber-200 text-xs font-semibold flex items-center justify-center gap-1.5 border border-amber-400/25 cursor-pointer transition-all active:scale-95">
+                  <label className="w-full py-2 px-2.5 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-amber-200 text-xs font-semibold flex items-center justify-center gap-1.5 border border-amber-400/25 cursor-pointer transition-all active:scale-95 shadow-sm">
                     <Upload className="w-3.5 h-3.5 text-amber-400" />
-                    <span>{hasLogo ? 'Ganti File' : 'Upload File'}</span>
+                    <span>{hasLogo ? 'Ganti File Gambar' : 'Upload File Gambar'}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -195,14 +196,22 @@ export const EventForm: React.FC<EventFormProps> = ({ event, onSave }) => {
                     />
                   </label>
 
-                  {/* URL Input */}
-                  <input
-                    type="url"
-                    placeholder="atau tempel URL gambar..."
-                    value={logoVal.startsWith('data:') ? '(Gambar terunggah)' : logoVal}
-                    onChange={(e) => handleLogoUrlChange(idx, e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-emerald-950/90 border border-amber-400/25 text-emerald-100 placeholder-emerald-400/40 text-[11px] focus:outline-none focus:border-amber-400"
-                  />
+                  {/* If no file is uploaded, offer optional web URL text input */}
+                  {!hasLogo ? (
+                    <input
+                      type="text"
+                      placeholder="atau tempel URL gambar..."
+                      value={logoVal}
+                      onChange={(e) => handleLogoUrlChange(idx, e.target.value)}
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-emerald-950/90 border border-amber-400/25 text-emerald-100 placeholder-emerald-400/40 text-[11px] focus:outline-none focus:border-amber-400"
+                    />
+                  ) : (
+                    <div className="text-center py-1">
+                      <span className="text-[10px] text-emerald-300 font-medium bg-emerald-900/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        {isBase64 ? '✓ File Terunggah' : '✓ Link URL Terpasang'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             );

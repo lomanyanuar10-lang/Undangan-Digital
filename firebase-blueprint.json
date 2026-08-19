@@ -1,0 +1,66 @@
+{
+  "entities": {
+    "Event": {
+      "title": "Event",
+      "description": "Data master acara undangan maulid nabi",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "slug": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "theme": { "type": "string", "maxLength": 256 },
+        "dateStr": { "type": "string", "maxLength": 128 },
+        "dateTimeIso": { "type": "string", "maxLength": 64 },
+        "timeStr": { "type": "string", "maxLength": 64 },
+        "speakerName": { "type": "string", "maxLength": 128 },
+        "speakerTitle": { "type": "string", "maxLength": 128 },
+        "speakerPhotoUrl": { "type": "string", "maxLength": 2048 },
+        "speakerBio": { "type": "string", "maxLength": 1024 },
+        "venueName": { "type": "string", "maxLength": 256 },
+        "venueAddress": { "type": "string", "maxLength": 512 },
+        "mapsUrl": { "type": "string", "maxLength": 2048 },
+        "mapsEmbedUrl": { "type": "string", "maxLength": 2048 },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "audioUrl": { "type": "string", "maxLength": 2048 },
+        "audioTitle": { "type": "string", "maxLength": 128 },
+        "isAudioEnabled": { "type": "boolean" },
+        "isCountdownEnabled": { "type": "boolean" },
+        "isRsvpEnabled": { "type": "boolean" },
+        "isNavbarEnabled": { "type": "boolean" },
+        "isVideoEnabled": { "type": "boolean" },
+        "videoUrl": { "type": "string", "maxLength": 2048 },
+        "islamicQuote": { "type": "string", "maxLength": 1024 },
+        "islamicQuoteSource": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string", "maxLength": 2048 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "slug", "title", "theme", "dateStr"]
+    },
+    "Rsvp": {
+      "title": "Rsvp",
+      "description": "Konfirmasi kehadiran dan pesan doa tamu",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "status": { "type": "string", "enum": ["hadir", "tidak_hadir", "tentatif"] },
+        "attendees": { "type": "number" },
+        "message": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "eventId", "name", "status", "attendees", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "Data dokumen informasi acara"
+    },
+    "/events/{eventId}/rsvps/{rsvpId}": {
+      "schema": { "$ref": "#/entities/Rsvp" },
+      "description": "Sub-koleksi konfirmasi kehadiran RSVP tamu undangan"
+    }
+  }
+}

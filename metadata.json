@@ -1,0 +1,6 @@
+{
+  "name": "Undangan Digital Maulid Nabi 1448 H",
+  "description": "Aplikasi undangan digital Peringatan Maulid Nabi Muhammad SAW 1448 H modern, mobile-first, dengan Live Preview, RSVP, Audio, Lokasi, dan Panel Admin CRUD.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -11,20 +11,29 @@ export default function App() {
   const [slug, setSlug] = useState<string>(storageService.getActiveSlug());
   const [event, setEvent] = useState<EventData>(storageService.getEvent(slug));
 
-  useEffect(() => {
-    // Check URL path or query params for /admin or /undangan/:slug
+  const checkRoute = () => {
     try {
       const pathname = window.location.pathname;
+      const hash = window.location.hash;
       const searchParams = new URLSearchParams(window.location.search);
 
-      if (pathname.includes('/admin') || searchParams.get('admin') === 'true' || searchParams.get('view') === 'admin') {
+      const isAdminRoute =
+        pathname.endsWith('/admin') ||
+        pathname.includes('/admin/') ||
+        hash === '#admin' ||
+        hash.startsWith('#admin') ||
+        searchParams.get('admin') === 'true' ||
+        searchParams.get('view') === 'admin';
+
+      if (isAdminRoute) {
         if (storageService.isAdminLoggedIn()) {
           setViewMode('admin-panel');
         } else {
           setViewMode('admin-login');
         }
       } else {
-        // Record visit
+        setViewMode('invitation');
+        // Record visit for guests only
         storageService.incrementStats(event.id, 'totalVisits');
       }
 
@@ -38,6 +47,17 @@ export default function App() {
     } catch {
       // Safe fallback
     }
+  };
+
+  useEffect(() => {
+    checkRoute();
+    window.addEventListener('hashchange', checkRoute);
+    window.addEventListener('popstate', checkRoute);
+
+    return () => {
+      window.removeEventListener('hashchange', checkRoute);
+      window.removeEventListener('popstate', checkRoute);
+    };
   }, []);
 
   // Listen to realtime event updates
@@ -51,16 +71,9 @@ export default function App() {
     return () => window.removeEventListener('undangan:eventUpdated', handleEventUpdate);
   }, []);
 
-  const handleOpenAdmin = () => {
-    if (storageService.isAdminLoggedIn()) {
-      setViewMode('admin-panel');
-    } else {
-      setViewMode('admin-login');
-    }
-  };
-
   const handleAdminLoginSuccess = () => {
     setViewMode('admin-panel');
+    window.location.hash = 'admin';
   };
 
   const handleAdminLogout = async () => {
@@ -70,6 +83,10 @@ export default function App() {
   };
 
   const handleBackToInvitation = () => {
+    // Switch to public invitation and clear admin hash
+    if (window.location.hash.includes('admin')) {
+      history.pushState(null, '', window.location.pathname + window.location.search);
+    }
     setViewMode('invitation');
   };
 
@@ -94,7 +111,6 @@ export default function App() {
   return (
     <InvitationView
       event={event}
-      onOpenAdmin={handleOpenAdmin}
     />
   );
 }

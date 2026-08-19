@@ -22,8 +22,10 @@ import { ScheduleManager } from './ScheduleManager';
 import { GalleryManager } from './GalleryManager';
 import { RsvpManager } from './RsvpManager';
 import { ThemeManager } from './ThemeManager';
+import { SecurityManager } from './SecurityManager';
 import { LivePreview } from './LivePreview';
 import { CrescentStarIcon } from '../components/IslamicOrnaments';
+import { ShieldCheck as ShieldCheckIcon } from 'lucide-react';
 
 interface AdminAppProps {
   onBackToInvitation: () => void;
@@ -80,6 +82,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onBackToInvitation, onLogout
     { id: 'gallery', label: 'Galeri', icon: ImageIcon },
     { id: 'rsvp', label: 'Daftar RSVP', icon: Users, badge: rsvps.length },
     { id: 'theme', label: 'Tema & Desain', icon: Palette },
+    { id: 'security', label: 'Keamanan & Akun', icon: ShieldCheckIcon },
   ];
 
   return (
@@ -220,6 +223,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onBackToInvitation, onLogout
           )}
 
           {activeTab === 'theme' && <ThemeManager event={event} onSave={handleSaveEvent} />}
+
+          {activeTab === 'security' && <SecurityManager />}
         </main>
 
         {/* Split Screen Live Preview (if enabled on wide screens) */}

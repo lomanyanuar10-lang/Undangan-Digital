@@ -300,7 +300,23 @@ class StorageService {
     }
   }
 
-  // --- Admin Session Auth ---
+  // --- Admin Session Auth & Master Passcode ---
+  public getMasterPassword(): string {
+    try {
+      return localStorage.getItem('undangan_master_password') || 'admin1448';
+    } catch {
+      return 'admin1448';
+    }
+  }
+
+  public setMasterPassword(password: string): void {
+    try {
+      localStorage.setItem('undangan_master_password', password.trim());
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   public isAdminLoggedIn(): boolean {
     try {
       return localStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
@@ -310,7 +326,9 @@ class StorageService {
   }
 
   public loginAdmin(password: string): boolean {
-    if (password === 'admin1448' || password === 'admin' || password === 'maulid1448') {
+    const currentMaster = this.getMasterPassword();
+    const cleanInput = password.trim();
+    if (cleanInput === currentMaster || cleanInput === 'admin1448') {
       try {
         localStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
         return true;
@@ -324,6 +342,7 @@ class StorageService {
   public logoutAdmin(): void {
     try {
       localStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+      localStorage.removeItem('undangan_admin_email');
     } catch (e) {
       console.error(e);
     }

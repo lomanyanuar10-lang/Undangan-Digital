@@ -196,6 +196,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <h4 className="font-bold text-amber-100 text-sm">Pengaturan Tema</h4>
           <p className="text-xs text-emerald-200/70 mt-1">Pilih preset tema, warna, font, dan custom background</p>
         </button>
+
+        <button
+          onClick={() => setActiveTab('security')}
+          className="p-5 rounded-2xl bg-emerald-950/80 border border-amber-400/20 hover:border-amber-400/60 text-left transition-all hover:scale-[1.01] cursor-pointer group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3 group-hover:bg-amber-500 group-hover:text-emerald-950 transition-colors">
+            <span className="text-lg">🔒</span>
+          </div>
+          <h4 className="font-bold text-amber-100 text-sm">Keamanan &amp; Akun</h4>
+          <p className="text-xs text-emerald-200/70 mt-1">Kelola tautan rahasia admin, sandi master, dan tambah panitia</p>
+        </button>
       </div>
 
       {/* Firestore Cloud Sync Guide Card */}

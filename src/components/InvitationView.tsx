@@ -18,7 +18,7 @@ import { FooterSection } from './FooterSection';
 
 interface InvitationViewProps {
   event: EventData;
-  onOpenAdmin: () => void;
+  onOpenAdmin?: () => void;
   isSimulated?: boolean; // When rendered inside phone simulator in Live Preview
 }
 
